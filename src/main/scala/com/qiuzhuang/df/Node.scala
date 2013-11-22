@@ -1,11 +1,8 @@
 package com.qiuzhuang.df
 
 import org.apache.hadoop.io.Writable;
-import org.apache.spark.{Logging, SparkException}
-import org.apache.spark.rdd.RDD
-import org.apache.spark.mllib.regression.LabeledPoint
-import java.lang.Math
-import java.io.DataInput
+import org.apache.spark.{SparkException, Logging}
+import java.io.{DataOutput, DataInput}
 
 /**
  * All rights reserved by Qiuzhuang.Lian
@@ -18,18 +15,39 @@ abstract class Node extends Writable with Logging {
 
   def maxDepth(): Double
 
+  def getNodeType() = NodeType.NONE
 
+  def getString(): String
+
+  def writeNode(out: DataOutput)
+
+  override def toString(): String = {
+    getNodeType + ":" + getString() + ';'
+  }
+
+  override def write(out: DataOutput) {
+    out.write(getNodeType.id)
+    writeNode(out)
+  }
 }
 
 object Node {
-  /*
-  def Node read(in: DataInput) {
-
+  def read(in: DataInput): Node = {
+    val nodeType = NodeType(in.readInt())
+    nodeType match {
+      case NodeType.LEAF =>
+        new Leaf()
+      case NodeType.NUMERICAL =>
+        new CategoricalNode
+      case NodeType.CATEGORICAL =>
+        new CategoricalNode
+      case _ =>
+        throw new IllegalArgumentException("Could not parse node type: '" + nodeType + "'")
+    }
   }
-  */
 }
 
-object NodeType extends Enumeration("LEAF", "NUMERICAL", "CATEGORICAL") {
+object NodeType extends Enumeration("LEAF", "NUMERICAL", "CATEGORICAL", "NONE") {
 	type NodeType = Value
-	val LEAF, NUMERICAL, CATEGORICAL = Value
+	val LEAF, NUMERICAL, CATEGORICAL, NONE = Value
 }
