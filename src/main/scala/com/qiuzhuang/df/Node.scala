@@ -11,11 +11,11 @@ abstract class Node extends Writable with Logging {
 
   def classify(features: Array[Double]): Double
 
-  def nbnodes(): Double
+  def nbnodes(): Long
 
-  def maxDepth(): Double
+  def maxDepth(): Long
 
-  def getNodeType() = NodeType.NONE
+  protected def getNodeType() = NodeType.NONE
 
   def getString(): String
 
@@ -34,7 +34,7 @@ abstract class Node extends Writable with Logging {
 object Node {
   def read(in: DataInput): Node = {
     val nodeType = NodeType(in.readInt())
-    nodeType match {
+    val node = nodeType match {
       case NodeType.LEAF =>
         new Leaf()
       case NodeType.NUMERICAL =>
@@ -44,6 +44,8 @@ object Node {
       case _ =>
         throw new IllegalArgumentException("Could not parse node type: '" + nodeType + "'")
     }
+    node.readFields(in)
+    node
   }
 }
 
