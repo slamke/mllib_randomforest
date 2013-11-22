@@ -1,4 +1,4 @@
-package com.qiuzhuang.df
+package com.qiuzhuang.df.node
 
 import org.apache.hadoop.io.Writable;
 import org.apache.spark.{SparkException, Logging}
