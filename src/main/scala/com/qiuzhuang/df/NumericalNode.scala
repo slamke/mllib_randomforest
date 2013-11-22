@@ -1,21 +1,60 @@
 package com.qiuzhuang.df
 
 import java.io.{DataOutput, DataInput}
+import scala.Double
 
 /**
  * All rights reserved by Qiuzhuang.Lian
  */
-class NumericalNode extends Node {
+class NumericalNode(
+    var attr: Int,
+    var split: Double,
+    var loChild: Node,
+    var hiChild: Node) extends Node {
 
-  def classify(features: Array[Double]): Double = 0.0
+  def classify(features: Array[Double]): Double = {
+    if (features(attr) < split) {
+      loChild.classify(features)
+    } else {
+      hiChild.classify(features)
+    }
+  }
 
-  def nbnodes(): Double = 0.0
+  override protected def getNodeType() = NodeType.NUMERICAL
 
-  def maxDepth(): Double = 0.0
+  def nbnodes(): Long = 1 + loChild.nbnodes + hiChild.nbnodes
 
-  def getString(): String = null
+  def maxDepth(): Long = 1 + scala.math.max(loChild.maxDepth, hiChild.maxDepth)
 
-  def writeNode(out: DataOutput) {}
+  override def equals(that: Any): Boolean = {
+    if (this == that) true
+    if (!that.isInstanceOf[NumericalNode]) false
+    val thatNode = that.asInstanceOf[NumericalNode]
+    thatNode.attr == attr &&
+    thatNode.split == split &&
+    thatNode.loChild.equals(loChild) &&
+    thatNode.hiChild.equals(hiChild)
+  }
 
-  def readFields(p1: DataInput) {}
+  override def hashCode(): Int = {
+    attr + java.lang.Double.doubleToLongBits(split).asInstanceOf[Int] + loChild.hashCode + hiChild.hashCode
+  }
+
+  override def getString(): String = {
+    loChild.toString() + ", " + hiChild.toString()
+  }
+
+  override def writeNode(out: DataOutput) {
+    out.writeInt(attr)
+    out.writeDouble(split)
+    loChild.write(out)
+    hiChild.write(out)
+  }
+
+  override def readFields(in: DataInput) {
+    attr = in.readInt
+    split = in.readDouble
+    loChild = Node.read(in)
+    hiChild = Node.read(in)
+  }
 }
