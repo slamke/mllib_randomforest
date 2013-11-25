@@ -10,7 +10,8 @@ class NumericalNode(
     private var attr: Int,
     private var split: Double,
     private var loChild: Node,
-    private var hiChild: Node) extends Node {
+    private var hiChild: Node
+  ) extends Node {
 
   def classify(features: Array[Double]): Double = {
     if (features(attr) < split) {
