@@ -6,9 +6,9 @@ import java.io.{DataOutput, DataInput}
  * All rights reserved by Qiuzhuang.Lian
  */
 class CategoricalNode(
-    var attr: Int = 0,
-    var values: Array[Double] = null,
-    var children: Array[Node] = null
+    private var attr: Int = 0,
+    private var values: Array[Double] = null,
+    private var children: Array[Node] = null
   ) extends Node {
 
   override def classify(features: Array[Double]): Double = {

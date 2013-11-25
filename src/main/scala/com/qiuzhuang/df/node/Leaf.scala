@@ -5,7 +5,7 @@ import java.io.{DataOutput, DataInput}
 /**
  * All rights reserved by Qiuzhuang.Lian
  */
-class Leaf(var label: Double = 0) extends Node {
+class Leaf(private var label: Double = 0) extends Node {
 
   val EPSILON = 1.0e-6
 
